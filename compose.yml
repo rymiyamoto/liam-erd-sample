@@ -1,8 +1,8 @@
-name: liam-edr-sample
+name: liam-erd-sample
 services:
   db:
     container_name: db
-    image: liam-edr-sample-db:latest
+    image: liam-erd-sample-db:latest
     platform: linux/amd64
     build:
       context: ./dockers/db
@@ -19,7 +19,7 @@ services:
       MYSQL_DATABASE: ${DB_SCHEMA}
   builder:
     container_name: builder
-    image: liam-edr-sample-builder:latest
+    image: liam-erd-sample-builder:latest
     build:
       context: .
       dockerfile: ./dockers/liam/Dockerfile
