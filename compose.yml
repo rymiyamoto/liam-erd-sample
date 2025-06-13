@@ -1,0 +1,45 @@
+name: liam-edr-sample
+services:
+  db:
+    container_name: db
+    image: liam-edr-sample-db:latest
+    platform: linux/amd64
+    build:
+      context: ./dockers/db
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./dockers/db/my.cnf:/etc/my.cnf
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_SCHEMA}
+  builder:
+    container_name: builder
+    image: liam-edr-sample-builder:latest
+    build:
+      context: .
+      dockerfile: ./dockers/liam/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./erd:/work
+    working_dir: /work
+    depends_on:
+      - db
+    profiles:
+      - builder # docker compose up 時に除外
+  viewer:
+    container_name: viewer
+    image: nginx:1.27-alpine
+    volumes:
+      - ./erd:/usr/share/nginx/html:ro
+    ports:
+      - "127.0.0.1:8080:80"
+    profiles:
+      - viewer # docker compose up 時に除外
+volumes:
+  db-data:
